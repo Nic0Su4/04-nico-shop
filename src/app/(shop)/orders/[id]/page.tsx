@@ -16,8 +16,8 @@ interface Props {
   }>;
 }
 
-export default function CheckoutPage({ params }: Props) {
-  const { id } = params;
+export default async function CheckoutPage({ params }: Props) {
+  const { id } = await params;
 
   // Todo: verificar
   // Redirect(/)
