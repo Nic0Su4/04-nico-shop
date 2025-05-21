@@ -11,9 +11,9 @@ const productsInCart = [
 ];
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function CheckoutPage({ params }: Props) {
