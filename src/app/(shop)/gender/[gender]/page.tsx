@@ -1,21 +1,37 @@
-import { ProductGrid, Title } from "@/components";
-import { Category } from "@/interfaces";
-import { initialData } from "@/seed/seed";
-import { notFound } from "next/navigation";
+export const revalidate = 60;
 
-const seedProducts = initialData.products;
+import { getPaginatedProductsWithImages } from "@/actions";
+import { Pagination, ProductGrid, Title } from "@/components";
+import { Gender } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: Promise<{
-    id: Category;
+    gender: Gender;
+  }>;
+  searchParams: Promise<{
+    page?: string;
   }>;
 }
 
-export default async function CategoryPage({ params }: Props) {
-  const { id } = await params;
-  const products = seedProducts.filter((product) => product.gender === id);
+export default async function CategoryPage({ params, searchParams }: Props) {
+  const { gender } = await params;
 
-  const labels: Record<Category, string> = {
+  const searchParamsAwaited = await searchParams;
+  const page = searchParamsAwaited.page
+    ? parseInt(searchParamsAwaited.page)
+    : 1;
+
+  const { products, currentPage, totalPages } =
+    await getPaginatedProductsWithImages({ page, gender });
+
+  console.log(currentPage, totalPages);
+
+  if (products.length === 0) {
+    redirect(`/gender/${gender}`);
+  }
+
+  const labels: Record<Gender, string> = {
     men: "Hombres",
     women: "Mujeres",
     kid: "Niños",
@@ -28,12 +44,14 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <>
       <Title
-        title={`Artículos para ${labels[id]}`}
+        title={`Artículos para ${labels[gender]}`}
         subtitle="Todos los productos"
         className="mb-2"
       />
 
       <ProductGrid products={products} />
+
+      <Pagination totalPages={totalPages} />
     </>
   );
 }
