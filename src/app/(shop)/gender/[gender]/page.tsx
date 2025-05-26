@@ -22,10 +22,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     ? parseInt(searchParamsAwaited.page)
     : 1;
 
-  const { products, currentPage, totalPages } =
-    await getPaginatedProductsWithImages({ page, gender });
-
-  console.log(currentPage, totalPages);
+  const { products, totalPages } = await getPaginatedProductsWithImages({
+    page,
+    gender,
+  });
 
   if (products.length === 0) {
     redirect(`/gender/${gender}`);
